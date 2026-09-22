@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans.xsd
+           http://www.springframework.org/schema/context
+           http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!-- 1. Подключение внешнего файла свойств (.properties) -->
+    <context:property-placeholder location="classpath:musicPlayer.properties"/>
+
+    <!-- 2. Объявление бинов зависимостей с внедрением простых значений через конструктор -->
+    <bean id="rockMusicBean" class="RockMusic">
+        <constructor-arg value="Queen"/>
+    </bean>
+
+    <bean id="classicalMusicBean" class="ClassicalMusic">
+        <constructor-arg value="П. И. Чайковский"/>
+    </bean>
+
+    <!-- 3. Объявление бина плеера: 
+            - Внедрение зависимости по ссылке через конструктор (ref)
+            - Внедрение простых значений через setter (property) из properties-файла -->
+    <bean id="musicPlayer" class="MusicPlayer">
+        <constructor-arg ref="rockMusicBean"/>
+        <property name="volume" value="${musicPlayer.volume}"/>
+        <property name="model" value="${musicPlayer.model}"/>
+    </bean>
+
+</beans>
