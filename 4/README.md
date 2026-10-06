@@ -1,24 +1,48 @@
+# Практическая работа 4. Spring, работа с БД (Вариант 1 — Телевизор)
 
-# Практическая работа 4.
 
-# Spring, работа с БД (Вариант 1 — Телевизор)
 
 ## Описание проекта
+
 Консольное CRUD-приложение на базе **Spring Framework** и **Spring JDBC (`JdbcTemplate`)** для взаимодействия с реляционной базой данных PostgreSQL.
 
 ### Сущность: Телевизор (`Tv`)
+
+
+
 * `id` — идентификатор (SERIAL PRIMARY KEY)
+
+
 * **Текстовые поля (3):**
-  * `brand` — производитель (Samsung, LG, Sony)
-  * `model` — наименование модели
-  * `screenTechnology` — технология матрицы (OLED, QLED, LED)
+
+* `brand` — производитель (Samsung, LG, Sony)
+
+
+* `model` — наименование модели
+
+
+* `screenTechnology` — технология матрицы (OLED, QLED, LED)
+
+
+
+
 * **Числовые поля (2):**
-  * `screenDiagonal` — диагональ экрана в дюймах
-  * `price` — стоимость в рублях
+
+* `screenDiagonal` — диагональ экрана в дюймах
+
+
+* `price` — стоимость в рублях
+
+
+
+
 
 ---
 
 ## Структура проекта
+
+
+
 ```text
 .
 ├── pom.xml
@@ -31,30 +55,23 @@
         │   ├── Tv.java
         │   └── TvDao.java
         └── resources
-            └── application.properties
+            ├── application.properties
+            └── schema.sql
 
 ```
 
 ---
 
-## Развертывание базы данных PostgreSQL
+## Настройка базы данных PostgreSQL
 
-### 1. Запуск СУБД в Docker
+### 1. Инициализация таблицы
 
-Запуск контейнера с пробросом порта `5433`:
+При первом запуске приложение автоматически создает таблицу `tv` и заполняет её демонстрационными данными (метод инициализации `initTable` бина `TvDao`).
 
-```bash
-docker run --name postgres-tv -e POSTGRES_PASSWORD=postgres -p 5433:5432 -d postgres
+Для ручного создания таблицы в PostgreSQL скрипт доступен в файле `src/main/resources/schema.sql`:
 
-```
-
-### 2. Создание таблицы и заполнение начальными данными
-
-Выполните инициализацию структуры таблицы `tv`:
-
-```bash
-docker exec -i postgres-tv psql -U postgres -c "
-CREATE TABLE tv (
+```sql
+CREATE TABLE IF NOT EXISTS tv (
     id SERIAL PRIMARY KEY,
     brand VARCHAR(100) NOT NULL,
     model VARCHAR(100) NOT NULL,
@@ -66,26 +83,48 @@ CREATE TABLE tv (
 INSERT INTO tv (brand, model, screen_technology, screen_diagonal, price) VALUES
 ('Samsung', 'QE55Q60A', 'QLED', 55.0, 65000.0),
 ('LG', 'OLED55C2', 'OLED', 55.0, 115000.0),
-('Sony', 'KD-43X81J', 'LED', 43.0, 48000.0);
-"
+('Sony', 'KD-43X81J', 'LED', 43.0, 48000.0)
+ON CONFLICT DO NOTHING;
+
 ```
 
-### 3. Настройка подключения
+### 2. Параметры подключения
 
+Параметры соединения с сервером базы данных настраиваются в файле `src/main/resources/application.properties`:
+
+```properties
+dataSource.driverClassName=org.postgresql.Driver
+dataSource.url=jdbc:postgresql://localhost:5432/postgres
+dataSource.username=postgres
+dataSource.password=postgres
+
+```
 
 ---
 
 ## Системные требования
 
+
+
 * **Java Development Kit (JDK):** 17 или выше
+
+
 * **Apache Maven:** 3.6+
-* **PostgreSQL:** 12+ (или запущенный Docker-контейнер)
+
+
+* **СУБД PostgreSQL:** 12+ (сервис запущен локально на стандартном порту 5432)
+
+
 
 ---
 
 ## Инструкция по сборке и запуску из командной строки
 
+
+
 ### 1. Компиляция проекта
+
+
 
 ```bash
 mvn clean compile
@@ -93,11 +132,15 @@ mvn clean compile
 
 ### 2. Запуск приложения
 
+
+
 ```bash
 mvn exec:java
 ```
 
 ### 3. Сборка jar-пакета
+
+
 
 ```bash
 mvn clean package
@@ -106,6 +149,8 @@ mvn clean package
 ---
 
 ## Пример работы программы
+
+
 
 ```text
 === УПРАВЛЕНИЕ ТОВАРАМИ (ТЕЛЕВИЗОРЫ) ===
@@ -129,4 +174,4 @@ ID: 3   | Бренд: Sony       | Модель: KD-43X81J    | Экран: LED 
 ID: 3   | Бренд: Sony       | Модель: KD-43X81J    | Экран: LED      | Диагональ: 43.0" | Цена:  48000.00 руб.
 ID: 1   | Бренд: Samsung    | Модель: QE55Q60A     | Экран: QLED     | Диагональ: 55.0" | Цена:  65000.00 руб.
 
-
+```

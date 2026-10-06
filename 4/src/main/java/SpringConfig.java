@@ -30,7 +30,7 @@ public class SpringConfig {
         return new JdbcTemplate(dataSource);
     }
 
-    @Bean
+    @Bean(initMethod = "initTable")
     public TvDao tvDao(JdbcTemplate jdbcTemplate) {
         return new TvDao(jdbcTemplate);
     }
