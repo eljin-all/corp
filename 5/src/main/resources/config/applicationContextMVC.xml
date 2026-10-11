@@ -25,9 +25,10 @@
         <property name="suffix" value=".ftl"/>
         <property name="contentType" value="text/html; charset=UTF-8"/>
         <property name="cache" value="false"/>
+        <property name="requestContextAttribute" value="rc"/>
     </bean>
 
-    <!-- Слой базы данных из Практической работы №4 -->
+    <!-- Слой базы данных -->
     <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
         <property name="driverClassName" value="${dataSource.driverClassName}"/>
         <property name="url" value="${dataSource.url}"/>
