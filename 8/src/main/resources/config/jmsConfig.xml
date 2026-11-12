@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+           http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!-- Фабрика соединений с брокером ActiveMQ -->
+    <bean id="connectionFactory" class="org.apache.activemq.spring.ActiveMQConnectionFactory">
+        <property name="brokerURL" value="tcp://localhost:61616"/>
+        <property name="trustAllPackages" value="true"/>
+    </bean>
+
+    <!-- Шаблон JmsTemplate с очередью администратора по умолчанию -->
+    <bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+        <property name="connectionFactory" ref="connectionFactory"/>
+        <property name="defaultDestinationName" value="tv.admin.queue"/>
+        <property name="receiveTimeout" value="2000"/>
+    </bean>
+
+    <!-- Сервис отправки и приема JMS-сообщений -->
+    <bean id="alertService" class="jms.AlertServiceImpl">
+        <constructor-arg ref="jmsTemplate"/>
+    </bean>
+
+</beans>
